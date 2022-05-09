@@ -64,7 +64,7 @@ def _create_ball():
     _space.add(body_ball, shape)
 
 
-def create_player1():
+def create_player1(fp_1):
     global foot1, shape1
     mass_head = 10
     radius_head = 30
@@ -79,7 +79,7 @@ def create_player1():
     # Creation of the foot
 
     mass_foot = 10
-    radius_foot = 30
+    radius_foot = 20
     inertia = pymunk.moment_for_circle(mass_foot, 0, radius_foot, (0, 0))
     foot1 = pymunk.Body(mass_foot, inertia)
     foot1.position = player_rect.x + 30, player_rect.y + 60
@@ -88,8 +88,20 @@ def create_player1():
     shape1.friction = 0
     _space.add(foot1, shape1)
 
+    mass = 150
+    moment = pymunk.moment_for_poly(mass, fp_1)
 
-def create_player2():
+    # right flipper
+    r_flipper_body = pymunk.Body(mass, moment)
+    r_flipper_body.position = player_rect.x + 30, player_rect.y + 80
+    r_flipper_shape = pymunk.Poly(r_flipper_body, fp_1)
+    _space.add(r_flipper_body, r_flipper_shape)
+
+    r_flipper_shape.group = 1
+    r_flipper_shape.elasticity = 0.4
+
+
+def create_player2(fp):
     global r_flipper_body, r_flipper_shape
 
     mass_head = 10
@@ -114,7 +126,7 @@ def create_player2():
 
     # Foot of the player
 
-    fp = [(10, -10), (-50, 0), (10, 10)]
+    # fp = [(10, -10), (-50, 0), (10, 10)] Modify fp[1][0] => direction of triangle
     mass = 150
     moment = pymunk.moment_for_poly(mass, fp)
 
@@ -145,18 +157,18 @@ def _add_static_scenery():
     static_body = _space.static_body
     static_lines = [
         # Ground
-        pymunk.Segment(static_body, (0.0, 625), (1360.0, 625), 0.0),
+        pymunk.Segment(static_body, (0.0, 625), (1360.0, 625), 1.0),
 
         # Right Goal
-        pymunk.Segment(static_body, (1260.0, 500), (1330.0, 500), 3.0),
+        pymunk.Segment(static_body, (1260.0, 500), (1360.0, 500), 3.0),
         # Left Goal
-        pymunk.Segment(static_body, (30.0, 500), (100.0, 500), 3.0),
+        pymunk.Segment(static_body, (0.0, 500), (100.0, 500), 3.0),
         # Left line
-        pymunk.Segment(static_body, (0.0, 0), (0.0, 768), 0.0),
+        pymunk.Segment(static_body, (0.0, 0), (0.0, 768), 1.0),
         # Right line
-        pymunk.Segment(static_body, (1360, 0), (1360, 768), 0.0),
+        pymunk.Segment(static_body, (1360, 0), (1360, 768), 1.0),
         # Top line
-        pymunk.Segment(static_body, (0.0, 0), (1360, 0), 0.0),
+        pymunk.Segment(static_body, (0.0, 0), (1360, 0), 1.0),
     ]
 
     for line in static_lines:
@@ -165,7 +177,7 @@ def _add_static_scenery():
     _space.add(*static_lines)
 
 
-def __game__(player1_choice, player2_choice):
+def __game__(player1_choice, player2_choice, player2_score, player1_score):
     global _space, player_rect, player2_rect, screen, _draw_options
 
     # Space
@@ -198,7 +210,8 @@ def __game__(player1_choice, player2_choice):
     pygame.display.set_caption('Fire Goal')
 
     t = 181000  # 180000 milliseconds = 3 minutes
-    font = pygame.font.SysFont("Verdana", 50)
+    font = pygame.font.Font("assets/font.ttf", 20)
+    font_score = pygame.font.Font("assets/font.ttf", 75)
 
     # Modifying the window's icon
     game_icon = pygame.image.load('sprites/game_icon.png').convert_alpha()
@@ -527,7 +540,6 @@ def __game__(player1_choice, player2_choice):
         animation_list_player2_left = [sanji_walk1_left, sanji_walk2_left, sanji_walk3_left, sanji_walk4_left,
                                        sanji_walk5_left, sanji_walk6_left, sanji_walk7_left, sanji_walk8_left]
 
-
     ball_im = pygame.image.load("DA/ball/ball.png").convert_alpha()
     ball4 = pygame.image.load("DA/ball/ball4.png").convert_alpha()
     ball2 = pygame.image.load("DA/ball/ball2.png").convert_alpha()
@@ -537,14 +549,10 @@ def __game__(player1_choice, player2_choice):
 
     ball = ball_im
 
-
     # Creating the Player's Rectangle
     player_rect = player1_surface.get_rect(midbottom=(453, 625))
     player2_rect = player2_surface.get_rect(midbottom=(960, 625))
 
-    # Initialisation of the player's score
-    player1_score = 0
-    player2_score = 0
 
     # Enregistrer le temps actuel
     last_update = pygame.time.get_ticks()
@@ -572,13 +580,17 @@ def __game__(player1_choice, player2_choice):
 
     # Creation of the ball and the player
     _create_ball()
-    create_player1()
-    create_player2()
+    create_player1([(10, -10), (50, 0), (10, 10)])
+    create_player2([(10, -10), (-50, 0), (10, 10)])
 
     # First issue, if we only run, the above code we'll create a window that'll close nearly instantly because code ends, so
     #   we need a while loop to maintain the window open:
     running = True
     while running:
+
+        fp = [(10, -10), (-50, 0), (10, 10)]# Foot of player2
+        fp1 = [(10, -10), (70, 0), (10, 10)]
+
         # Progress time forward
         for x in range(_physics_steps_per_frame):
             _space.step(_dt)
@@ -657,6 +669,7 @@ def __game__(player1_choice, player2_choice):
         if dict_keys_press.get(pygame.K_d) and player_rect.right <= 1354:
             current_time = pygame.time.get_ticks()  # enregistrer le temps actuel
             player_rect.x += 5
+            fp1 = [(10, -10), (70, 0), (10, 10)]
             if current_time - last_update >= animation_cooldown:  # Comparer le temps actuel et le dernier enregistrer pour savoir si le temps d'animation est finie
                 frame += 1  # Ajouter 1 à frame pour changer d'image
                 last_update = current_time  # le temps actuel devient le temps passé pour changer de sprite la prochaine fois
@@ -672,6 +685,7 @@ def __game__(player1_choice, player2_choice):
         # Right player 2
         if dict_keys_press.get(pygame.K_RIGHT) and player2_rect.right <= 1354:
             player2_rect.x += 5
+            fp = [(10, -10), (70, 0), (10, 10)]
             current_time = pygame.time.get_ticks()  # enregistrer le temps actuel
             if current_time - last_update >= animation_cooldown:  # Comparer le temps actuel et le dernier enregistrer pour savoir si le temps d'animation est finie
                 frame += 1  # Ajouter 1 à frame pour changer d'image
@@ -694,6 +708,7 @@ def __game__(player1_choice, player2_choice):
             # Pareil qu'au dessus
             current_time = pygame.time.get_ticks()
             player_rect.x -= 5
+            fp1 = [(10, -10), (-50, 0), (10, 10)]
             if current_time - last_update >= animation_cooldown:
                 frame += 1
                 last_update = current_time
@@ -708,6 +723,7 @@ def __game__(player1_choice, player2_choice):
 
         if dict_keys_press.get(pygame.K_LEFT) and player2_rect.x >= 0:
             player2_rect.x -= 5
+            fp = [(10, -10), (-50, 0), (10, 10)]
             current_time = pygame.time.get_ticks()
             if current_time - last_update >= animation_cooldown:
                 frame += 1
@@ -774,10 +790,15 @@ def __game__(player1_choice, player2_choice):
 
         if x <= 100 and y >= 500:
             player1_score += 1
-            # WE NEED TO RESTART THE GAME
+            player_rect = player1_surface.get_rect(midbottom=(453, 625))
+            player2_rect = player2_surface.get_rect(midbottom=(960, 625))
+            body_ball.position = 680, 300
+
         elif x >= 1260 and y >= 500:
             player2_score += 1
-            # WE NEED TO RESTART THE GAME
+            player_rect = player1_surface.get_rect(midbottom=(453, 625))
+            player2_rect = player2_surface.get_rect(midbottom=(960, 625))
+            body_ball.position = 680, 300
 
         # We need to remove the last object created else it will create an infinite amount of ball
         _space.remove(_space.shapes[-1], _space.shapes[-1].body)
@@ -785,9 +806,10 @@ def __game__(player1_choice, player2_choice):
         _space.remove(_space.shapes[-1], _space.shapes[-1].body)
         _space.remove(_space.shapes[-1], _space.shapes[-1].body)
         _space.remove(_space.shapes[-1], _space.shapes[-1].body)
+        _space.remove(_space.shapes[-1], _space.shapes[-1].body)
         # Creation of a ball representing the player physical body
-        create_player1()
-        create_player2()
+        create_player1(fp1)
+        create_player2(fp)
 
         # Keyboard Input Part
         # Here we're using the pygame.key method, more specifically, the pygame.key.get_pressed() method which returns a
@@ -799,9 +821,13 @@ def __game__(player1_choice, player2_choice):
 
         # Afficher le timer
         if len(str(seconds % 60)) == 1:
-            creer_message(font, '{}:0{}'.format(seconds // 60, seconds % 60), [635, 60, 20, 20], 'black')
+            creer_message(font, '{}:0{}'.format(seconds // 60, seconds % 60), [650, 90, 20, 20], 'black')
         else:
-            creer_message(font, '{}:{}'.format(seconds // 60, seconds % 60), [635, 60, 20, 20], 'black')
+            creer_message(font, '{}:{}'.format(seconds // 60, seconds % 60), [650, 90, 20, 20], 'black')
+
+        # Afficher le score
+        creer_message(font_score, '{}'.format(player2_score), [520, 65, 20, 20], 'red')
+        creer_message(font_score, '{}'.format(player1_score), [795, 65, 20, 20], 'red')
 
         pygame.display.update()
 
