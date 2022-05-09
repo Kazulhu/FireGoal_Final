@@ -29,8 +29,10 @@ def get_font(size):  # Returns Press-Start-2P in the desired size
     return pygame.font.Font("assets/font.ttf", size)
 
 
-def player2_perso():
-    global player2_choice
+def player2_perso(player2_score, player1_score):
+    global player2_choice, player2_gravity
+
+    player2_gravity = 0
 
     while True:
         PLAY_MOUSE_POS = pygame.mouse.get_pos()
@@ -93,20 +95,22 @@ def player2_perso():
                         play()
                     if PLAY_BUTTON.checkForInput(PLAY_MOUSE_POS):
                         player2_choice = 1
-                        __game__(player1_choice, player2_choice)
+                        __game__(player1_choice, player2_choice, player2_score, player1_score)
                     if PLAY_BUTTON1.checkForInput(PLAY_MOUSE_POS):
                         player2_choice = 2
-                        __game__(player1_choice, player2_choice)
+                        __game__(player1_choice, player2_choice, player2_score, player1_score)
                     if PLAY_BUTTON2.checkForInput(PLAY_MOUSE_POS):
                         player2_choice = 3
-                        __game__(player1_choice, player2_choice)
+                        __game__(player1_choice, player2_choice, player2_score, player1_score)
 
         pygame.display.update()
         clock.tick(FPS)
 
 
 def play():
-    global player1_choice
+    global player1_choice, player_gravity
+
+    player_gravity = 0
 
     while True:
         PLAY_MOUSE_POS = pygame.mouse.get_pos()
@@ -158,6 +162,9 @@ def play():
         PLAY_BACK.changeColor(PLAY_MOUSE_POS)
         PLAY_BACK.update(SCREEN)
 
+        player1_score = 0
+        player2_score = 0
+
         for button in [PERSO_TEXT, PERSO_RECT, PERSO_IMAGE1, PERSO_IMAGE]:
 
             for event in pygame.event.get():
@@ -169,13 +176,15 @@ def play():
                         main_menu()
                     if PLAY_BUTTON.checkForInput(PLAY_MOUSE_POS):
                         player1_choice = 1
-                        player2_perso()
+                        player2_perso(player2_score, player1_score)
                     if PLAY_BUTTON1.checkForInput(PLAY_MOUSE_POS):
                         player1_choice = 2
-                        player2_perso()
+                        player2_perso(player2_score, player1_score)
                     if PLAY_BUTTON2.checkForInput(PLAY_MOUSE_POS):
                         player1_choice = 3
-                        player2_perso()
+                        player2_perso(player2_score, player1_score)
+
+
 
         pygame.display.update()
         clock.tick(FPS)
