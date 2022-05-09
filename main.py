@@ -11,13 +11,16 @@ pygame.init()
 clock = pygame.time.Clock()
 FPS = 60
 
-SCREEN = pygame.display.set_mode((1200, 720))
-pygame.display.set_caption("Menu")
+SCREEN = pygame.display.set_mode((1360, 768))
+pygame.display.set_caption("Fire Goal")
+game_icon = pygame.image.load('sprites/game_icon.png').convert_alpha()
+pygame.display.set_icon(game_icon)
+
 mixer.music.load('assets/squad-infraction-main-version-01-44-13482.mp3')
 mixer.music.play(-1)
 
 BG = pygame.image.load("assets/unknown.png")
-BG = pygame.transform.scale(BG, (1200, 720))
+BG = pygame.transform.scale(BG, (1360, 768))
 LOGO = pygame.image.load("assets/logo.png")
 LOGO = pygame.transform.scale(LOGO, (170, 140))
 play_button = pygame.image.load("assets/button.png")
@@ -29,12 +32,12 @@ def get_font(size):  # Returns Press-Start-2P in the desired size
     return pygame.font.Font("assets/font.ttf", size)
 
 
-def player2_perso(player2_score, player1_score):
+def player2_perso():
     global player2_choice, player2_gravity
 
     player2_gravity = 0
-
-    while True:
+    run=True
+    while run:
         PLAY_MOUSE_POS = pygame.mouse.get_pos()
         # applique le BG dans une fenêtre spécial
 
@@ -95,24 +98,26 @@ def player2_perso(player2_score, player1_score):
                         play()
                     if PLAY_BUTTON.checkForInput(PLAY_MOUSE_POS):
                         player2_choice = 1
-                        __game__(player1_choice, player2_choice, player2_score, player1_score)
+                        run=False
                     if PLAY_BUTTON1.checkForInput(PLAY_MOUSE_POS):
                         player2_choice = 2
-                        __game__(player1_choice, player2_choice, player2_score, player1_score)
+                        run=False
                     if PLAY_BUTTON2.checkForInput(PLAY_MOUSE_POS):
                         player2_choice = 3
-                        __game__(player1_choice, player2_choice, player2_score, player1_score)
+                        run=False
 
         pygame.display.update()
         clock.tick(FPS)
 
+    return player2_choice
 
 def play():
     global player1_choice, player_gravity
 
     player_gravity = 0
+    run=True
 
-    while True:
+    while run:
         PLAY_MOUSE_POS = pygame.mouse.get_pos()
         # applique le BG dans une fenêtre spécial
 
@@ -162,9 +167,6 @@ def play():
         PLAY_BACK.changeColor(PLAY_MOUSE_POS)
         PLAY_BACK.update(SCREEN)
 
-        player1_score = 0
-        player2_score = 0
-
         for button in [PERSO_TEXT, PERSO_RECT, PERSO_IMAGE1, PERSO_IMAGE]:
 
             for event in pygame.event.get():
@@ -176,19 +178,21 @@ def play():
                         main_menu()
                     if PLAY_BUTTON.checkForInput(PLAY_MOUSE_POS):
                         player1_choice = 1
-                        player2_perso(player2_score, player1_score)
+                        player2_choice = player2_perso()
+                        run=False
                     if PLAY_BUTTON1.checkForInput(PLAY_MOUSE_POS):
                         player1_choice = 2
-                        player2_perso(player2_score, player1_score)
+                        player2_choice= player2_perso()
+                        run = False
                     if PLAY_BUTTON2.checkForInput(PLAY_MOUSE_POS):
                         player1_choice = 3
-                        player2_perso(player2_score, player1_score)
-
-
+                        player2_choice = player2_perso()
+                        run = False
 
         pygame.display.update()
         clock.tick(FPS)
 
+    return player1_choice, player2_choice
 
 def options():
     while True:
@@ -319,6 +323,7 @@ def credits():
 
 
 def main_menu():
+    SCREEN = pygame.display.set_mode((1360, 768))
     mixer.music.load('DA/sounds/musics/Head Soccer 95 bpm.mp3')
     mixer.music.play(-1, 0, 10000)
     NO_SOUND = False
@@ -360,7 +365,9 @@ def main_menu():
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
-                    play()
+                    player1_choice, player2_choice = play()
+                    player1_score, player2_score = 0,0
+                    __game__(player1_choice, player2_choice, player2_score, player1_score)
                 if OPTIONS_BUTTON.checkForInput(MENU_MOUSE_POS):
                     options()
                 if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):

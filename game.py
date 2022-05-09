@@ -17,6 +17,7 @@ from sys import exit
 # Library imports
 import pygame
 import time
+from random import randint
 from pygame.locals import *
 
 # pymunk imports
@@ -157,12 +158,12 @@ def _add_static_scenery():
     static_body = _space.static_body
     static_lines = [
         # Ground
-        pymunk.Segment(static_body, (0.0, 625), (1360.0, 625), 1.0),
+        pymunk.Segment(static_body, (0.0, 580), (1360.0, 580), 1.0),
 
         # Right Goal
-        pymunk.Segment(static_body, (1260.0, 500), (1360.0, 500), 3.0),
+        pymunk.Segment(static_body, (1188.0, 460), (1360.0, 450), 3.0),
         # Left Goal
-        pymunk.Segment(static_body, (0.0, 500), (100.0, 500), 3.0),
+        pymunk.Segment(static_body, (0.0, 475), (156.0, 485), 3.0),
         # Left line
         pymunk.Segment(static_body, (0.0, 0), (0.0, 768), 1.0),
         # Right line
@@ -209,7 +210,7 @@ def __game__(player1_choice, player2_choice, player2_score, player1_score):
     # Attributes a name to the Pygame window
     pygame.display.set_caption('Fire Goal')
 
-    t = 181000  # 180000 milliseconds = 3 minutes
+    t = 18100  # 180000 milliseconds = 3 minutes 181000
     font = pygame.font.Font("assets/font.ttf", 20)
     font_score = pygame.font.Font("assets/font.ttf", 75)
 
@@ -238,7 +239,8 @@ def __game__(player1_choice, player2_choice, player2_score, player1_score):
     # ground_rect_2 = ground_surface.get_rect(bottomleft=(785, 768))
 
     # Test stadium as background
-    stadium_surface = pygame.image.load("DA/backgrounds/dawn.png").convert_alpha()
+    image_background = "DA/backgrounds/{}.png".format(randint(1,8))
+    stadium_surface = pygame.image.load(image_background).convert_alpha()
     stadium_rect = stadium_surface.get_rect(center=(680, 380))
 
     # render(text_i_want_to_write, boolean for anti-aliasing (smooth text's edges), color_in_which_text_is_written_in)
@@ -745,10 +747,10 @@ def __game__(player1_choice, player2_choice, player2_score, player1_score):
 
         # The ground must be drawn after the sky surface, otherwise it will be hidden by the sky.
         # Displaying all the object from pymunk
-        _draw_objects()
+
         """"""""""""""""""""""""""""""""""""""""""
         screen.blit(stadium_surface, stadium_rect)
-
+        _draw_objects()
         # Displaying stadium background
 
         #
@@ -767,12 +769,12 @@ def __game__(player1_choice, player2_choice, player2_score, player1_score):
         player2_rect.y += player2_gravity
         # Creating a ground
         # Height of ground is 625
-        if player_rect.bottom >= 625:
-            player_rect.bottom = 625
+        if player_rect.bottom >= 580:
+            player_rect.bottom = 580
             player_is_jumping = False
 
-        if player2_rect.bottom >= 625:
-            player2_rect.bottom = 625
+        if player2_rect.bottom >= 580:
+            player2_rect.bottom = 580
             player2_is_jumping = False
 
         screen.blit(player1_surface, player_rect)
@@ -788,13 +790,16 @@ def __game__(player1_choice, player2_choice, player2_score, player1_score):
         x, y = pymunk.pygame_util.to_pygame(body_ball.position, screen)
         screen.blit(ball, (int(x - 17.5), int(y - 17.5)))
 
-        if x <= 100 and y >= 500:
+        if x<0 or x>1360 or y<0 or y>768:
+            body_ball.position = 680, 300
+
+        if x <= 156 and y >= 500:
             player1_score += 1
             player_rect = player1_surface.get_rect(midbottom=(453, 625))
             player2_rect = player2_surface.get_rect(midbottom=(960, 625))
             body_ball.position = 680, 300
 
-        elif x >= 1260 and y >= 500:
+        elif x >= 1188 and y >= 500:
             player2_score += 1
             player_rect = player1_surface.get_rect(midbottom=(453, 625))
             player2_rect = player2_surface.get_rect(midbottom=(960, 625))
