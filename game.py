@@ -747,10 +747,10 @@ def __game__(player1_choice, player2_choice, player2_score, player1_score):
 
         # The ground must be drawn after the sky surface, otherwise it will be hidden by the sky.
         # Displaying all the object from pymunk
-
+        _draw_objects()
         """"""""""""""""""""""""""""""""""""""""""
         screen.blit(stadium_surface, stadium_rect)
-        _draw_objects()
+
         # Displaying stadium background
 
         #
