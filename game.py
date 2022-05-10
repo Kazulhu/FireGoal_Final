@@ -210,7 +210,7 @@ def __game__(player1_choice, player2_choice, player2_score, player1_score):
     # Attributes a name to the Pygame window
     pygame.display.set_caption('Fire Goal')
 
-    t = 18100  # 180000 milliseconds = 3 minutes 181000
+    t = 181000  # 180000 milliseconds = 3 minutes 181000
     font = pygame.font.Font("assets/font.ttf", 20)
     font_score = pygame.font.Font("assets/font.ttf", 75)
 
@@ -670,7 +670,7 @@ def __game__(player1_choice, player2_choice, player2_score, player1_score):
         # if 'RIGHT arrow' key pressed and player_rect.x <= 800 (not going above the window border)
         if dict_keys_press.get(pygame.K_d) and player_rect.right <= 1354:
             current_time = pygame.time.get_ticks()  # enregistrer le temps actuel
-            player_rect.x += 5
+            player_rect.x += 7
             fp1 = [(10, -10), (70, 0), (10, 10)]
             if current_time - last_update >= animation_cooldown:  # Comparer le temps actuel et le dernier enregistrer pour savoir si le temps d'animation est finie
                 frame += 1  # Ajouter 1 à frame pour changer d'image
@@ -686,7 +686,7 @@ def __game__(player1_choice, player2_choice, player2_score, player1_score):
 
         # Right player 2
         if dict_keys_press.get(pygame.K_RIGHT) and player2_rect.right <= 1354:
-            player2_rect.x += 5
+            player2_rect.x += 7
             fp = [(10, -10), (70, 0), (10, 10)]
             current_time = pygame.time.get_ticks()  # enregistrer le temps actuel
             if current_time - last_update >= animation_cooldown:  # Comparer le temps actuel et le dernier enregistrer pour savoir si le temps d'animation est finie
@@ -709,7 +709,7 @@ def __game__(player1_choice, player2_choice, player2_score, player1_score):
 
             # Pareil qu'au dessus
             current_time = pygame.time.get_ticks()
-            player_rect.x -= 5
+            player_rect.x -= 7
             fp1 = [(10, -10), (-50, 0), (10, 10)]
             if current_time - last_update >= animation_cooldown:
                 frame += 1
@@ -724,7 +724,7 @@ def __game__(player1_choice, player2_choice, player2_score, player1_score):
                 player1_surface = animation_list_player1_left[frame % 8]
 
         if dict_keys_press.get(pygame.K_LEFT) and player2_rect.x >= 0:
-            player2_rect.x -= 5
+            player2_rect.x -= 7
             fp = [(10, -10), (-50, 0), (10, 10)]
             current_time = pygame.time.get_ticks()
             if current_time - last_update >= animation_cooldown:
