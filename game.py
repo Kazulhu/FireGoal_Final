@@ -1,14 +1,15 @@
-# 23/02/2022 - First Time Ever using PyGame - Reference : "The ultimate introduction to Pygame" by Clear Code on YouTube
+# Transverse Project: Game in python
+# Coded by:
+# Guillaume Rousselin
+# Fady Mechlaoui
+# Kevin Tran
+# Romain Ferigo
+# Quentin Rault
 
-# Video Games are like movies, they're superposition of images/frames displayed fast enough (24 frames/second) so that
-#   our brains will assume them as a fluent motion. In a game, images are generated while the game is running, at the
-#   opposite of a movie (fixed images). Moreover, in a game, we constantly check the player's input to know which frame
-#   should be drawn.
+# This file contains the game: all the functions that allows to move the players, add goal, add animations for the player
+# Collisions with the help of the pymunk libraries
 
-# What does Pygame do ?
-#   It helps draw images.
-#   Check input of the player w/o the input() method that would pause the code and would be useless for a game.
-#   Useful to detect collisions, create text, timers...
+# ------------------------ Fire Goal ------------------------ #
 
 # -------------------- Importing Modules -------------------- #
 
@@ -54,7 +55,9 @@ def _create_ball():
     :return None:
     """
     global body_ball
+    # Mass of the ball
     mass = 10
+    # Radius of the ball
     radius = 15
     inertia = pymunk.moment_for_circle(mass, 0, radius, (0, 0))
     body_ball = pymunk.Body(mass, inertia)
@@ -64,7 +67,7 @@ def _create_ball():
     shape.friction = 1
     _space.add(body_ball, shape)
 
-
+# We create the player 1. His physical body is composed of three parts: a circle for his head, a circle for his body and a triangle for his foot
 def create_player1(fp_1):
     global foot1, shape1
     mass_head = 10
@@ -101,7 +104,7 @@ def create_player1(fp_1):
     r_flipper_shape.group = 1
     r_flipper_shape.elasticity = 0.4
 
-
+# We create the player 1. His physical body is composed of three parts: a circle for his head, a circle for his body and a triangle for his foot
 def create_player2(fp):
     global r_flipper_body, r_flipper_shape
 
@@ -136,14 +139,6 @@ def create_player2(fp):
     r_flipper_body.position = player2_rect.x + 30, player2_rect.y + 80
     r_flipper_shape = pymunk.Poly(r_flipper_body, fp)
     _space.add(r_flipper_body, r_flipper_shape)
-
-    """r_flipper_joint_body = pymunk.Body(body_type=pymunk.Body.KINEMATIC)
-    r_flipper_joint_body.position = r_flipper_body.position
-    j = pymunk.PinJoint(r_flipper_body, r_flipper_joint_body, (0, 0), (0, 0))
-    s = pymunk.DampedRotarySpring(
-        r_flipper_body, r_flipper_joint_body, 0.15, 20000000, 900000
-    )
-    _space.add(j, s)"""
 
     r_flipper_shape.group = 1
     r_flipper_shape.elasticity = 0.4
@@ -210,7 +205,7 @@ def __game__(player1_choice, player2_choice, player2_score, player1_score):
     # Attributes a name to the Pygame window
     pygame.display.set_caption('Fire Goal')
 
-    t = 181000  # 180000 milliseconds = 3 minutes 181000
+    t = 1810000  # 180000 milliseconds = 3 minutes 181000
     font = pygame.font.Font("assets/font.ttf", 20)
     font_score = pygame.font.Font("assets/font.ttf", 75)
 
@@ -224,40 +219,12 @@ def __game__(player1_choice, player2_choice, player2_score, player1_score):
     # Font Initialization
     test_font = pygame.font.Font('font/Pixeltype.ttf', 35)
 
-    # Initialize the Display Surface (=/= window), where all Regular Surfaces are displayed. It's like the background.
-    # test_surface = pygame.Surface((100, 200))
-
-    # convert_alpha() method is used so Pygame can work with files with better compatibility than png files, which becomes
-    #   pretty important when we have dozens of pngs to display on screen in Pygame.
-    # sky_surface = pygame.image.load("sprites/background/sky.png").convert_alpha()
-    # sky_rect = sky_surface.get_rect(topleft=(0, 0))
-
-    # The ".fill()" method is used to colour the "test-surface" Display Surface
-    # test_surface.fill('Red')
-    # ground_surface = pygame.image.load("sprites/background/ground.png").convert_alpha()
-    # ground_rect_1 = ground_surface.get_rect(bottomleft=(0, 768))
-    # ground_rect_2 = ground_surface.get_rect(bottomleft=(785, 768))
-
     # Test stadium as background
     image_background = "DA/backgrounds/{}.png".format(randint(1,8))
     stadium_surface = pygame.image.load(image_background).convert_alpha()
     stadium_rect = stadium_surface.get_rect(center=(680, 380))
 
-    # render(text_i_want_to_write, boolean for anti-aliasing (smooth text's edges), color_in_which_text_is_written_in)
-    # text_surface = test_font.render("Runner Game", False, "Black")  # or with RGB tuple :
-    # text_surface = test_font.render("Runner Game", False, (64, 64, 64))
-    # text_rect = text_surface.get_rect(center=(400, 25))
-
-    # Importing the Snail's sprites.
-    # snail_surface_1 = pygame.image.load('sprites/characters/snail/snail1.png').convert_alpha()
-    # snail_surface_2 = pygame.image.load('sprites/characters/snail/snail2.png').convert_alpha()
-    # snail_x_pos = 800
-    #
-    # Rectangle Method, more practical, easier manipulation of pngs/sprites movement, (topleft, midtop, topright, midright,
-    #   bottomright, midbottom, bottomleft, midleft, center).
-    # snail_rect = snail_surface_1.get_rect(bottomleft=(801, 232))
-
-    # Importing Player's Sprite
+    # Importing all Player's Sprite
     if player1_choice == 1:
         """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
         jerry = pygame.image.load("DA/players/jerry/right/static.png").convert_alpha()
@@ -555,7 +522,6 @@ def __game__(player1_choice, player2_choice, player2_score, player1_score):
     player_rect = player1_surface.get_rect(midbottom=(453, 625))
     player2_rect = player2_surface.get_rect(midbottom=(960, 625))
 
-
     # Enregistrer le temps actuel
     last_update = pygame.time.get_ticks()
     # Enregistrer les images dans une liste
@@ -565,7 +531,6 @@ def __game__(player1_choice, player2_choice, player2_score, player1_score):
     frame = 0  # frame 0
 
     # Gravity
-    # The longer you fall, the faster you fall (exponential) (*)
     # Gravity part separated into two different parts
     # Part 1 - Create a variable which will represent gravity and will be incremented because (*)
     # player's gravity initialized at 0
@@ -620,24 +585,6 @@ def __game__(player1_choice, player2_choice, player2_score, player1_score):
                 # Use the exit() function to shut down everything and avoid error because of the error we could get with the
                 # Pygame un-initialization and the while loop still running
                 exit()
-
-            # Keyboard Event Input (pressed / released)
-            # KEYDOWN is an event which is triggered when keyboard's keys are pressed.
-            # KEYUP is an event which is triggered when keyboard's keys are released after being pressed.
-            #
-            # There are two things to memorize: we must use the key method to provide information about which key is pressed
-            #   (keys = pygame.key.get_pressed()
-            #   (if keys[pygame.K_SPACE]:
-            #   (   print("Jump !"))
-            #
-            #   or we can use the the event.type/key method to do same like above
-            #     the event.type is used here to know if a button is pressed/released, while the event.key method is used
-            #     to know **which** keyboard button is pressed
-            #
-            # Why are we using two different methods (event and keys) to get user's input ?
-            #   Later on, we'll be using classes to gather all the controls relevant to the class to the class we're
-            #     working with in it. pygame.mouse (event.type) and pygame.keys (keys = pygame.key.get_pressed()) are great
-            #     for that.
 
             # If a key is pressed
             elif event.type == pygame.KEYDOWN:
@@ -741,25 +688,16 @@ def __game__(player1_choice, player2_choice, player2_score, player1_score):
 
         # blit -- Block Image Transfer, allow to put one surface on another.
 
-        # screen.blit(surface_i_want_to_place, (position_x, position_y))
-        # screen.blit(sky_surface, (0, 0))
-        # screen.blit(sky_surface, sky_rect)
-
-        # The ground must be drawn after the sky surface, otherwise it will be hidden by the sky.
+        # The physical body need to be displayed before the sprites, else it will be above the sprites and will be ugly
         # Displaying all the object from pymunk
         _draw_objects()
         """"""""""""""""""""""""""""""""""""""""""
-        screen.blit(stadium_surface, stadium_rect)
-
         # Displaying stadium background
+        screen.blit(stadium_surface, stadium_rect)
 
         #
         # Gravity
         # Part 2
-        # print(f"player_gravity = {player_gravity}")
-        # player_gravity is continuously incrementing
-        # player_rect.y += player_gravity  # makes player go by -20 (up) if spacebar is pressed
-        #                                  # makes player go by player_gravity (down) if player is in air
         # if player touches ground player gets a "resistance" (simulation) see line 241 - 244
         player_gravity += 1
         player2_gravity += 1
@@ -816,14 +754,6 @@ def __game__(player1_choice, player2_choice, player2_score, player1_score):
         create_player1(fp1)
         create_player2(fp)
 
-        # Keyboard Input Part
-        # Here we're using the pygame.key method, more specifically, the pygame.key.get_pressed() method which returns a
-        #   tuple of booleans (0 and 1) indicating which key of the keyboard is pressed.
-        # print(pygame.key.get_pressed())
-        #
-        # Storing this tuple into a "keys" variable
-
-
         # Afficher le timer
         if len(str(seconds % 60)) == 1:
             creer_message(font, '{}:0{}'.format(seconds // 60, seconds % 60), [650, 90, 20, 20], 'black')
@@ -836,16 +766,19 @@ def __game__(player1_choice, player2_choice, player2_score, player1_score):
 
         pygame.display.update()
 
-        # Calling the draw Pymunk function to draw on the screen all the Ball's Physic Part
-        """draw(space, screen, draw_options)"""
-        # This is how fast my Pymunk simulation should go (concept pretty similar to the clock.tick one)
-        """space.step(dt)"""
         # 1 frame/second <=> moving 10 pixels/second every frame/image
         # Ceiling/FPS limitation at 60 (600 pixels/second moving)
         clock.tick(fps)
 
-    """stadium_surface = pygame.image.load("DA/backgrounds/dawn.png").convert_alpha()
-    stadium_rect = stadium_surface.get_rect(center=(680, 380))
-    screen.blit(stadium_surface, stadium_rect)
-    creer_message(font, "Player _ has won!!!", [680, 275, 50, 50], 'black')
-    slee"""
+    if player1_score>player2_score:
+        creer_message(font_score, 'Player 1 won !!!', [250, 250, 20, 20], 'red')
+        pygame.display.update()
+        time.sleep(3)
+    elif player2_score>player1_score:
+        creer_message(font_score, 'Player 2 won !!!', [250, 250, 20, 20], 'red')
+        pygame.display.update()
+        time.sleep(3)
+    else:
+        creer_message(font_score, 'No player won !!!', [250, 250, 20, 20], 'red')
+        pygame.display.update()
+        time.sleep(3)
